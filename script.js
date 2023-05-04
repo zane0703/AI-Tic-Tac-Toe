@@ -18,7 +18,6 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
                     if (isPlayer) {
                         if (array[i] == 32) {
                             array[i] = 79;
-                                    
                             even.target.textContent = "O"
                             even.target.disabled = true;
                             disableAll(true);
