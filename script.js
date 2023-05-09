@@ -14,7 +14,7 @@ for (let i = 0 ; i < 16; ++i) {
 Object.freeze(btn4x4)
 /**@type {HTMLButtonElement} */
 const clear = document.getElementById("clear");
-/**@type {HTMLSpanElement} */
+/**@type {HTMLParagraphElement} */
 const statusText = document.getElementById("status"); 
 /**@type {HTMLButtonElement} */
 const changeMode = document.getElementById("changeMode")
@@ -32,18 +32,42 @@ function bottomButtonDisabled (disabled) {
     changeMode.disabled = disabled;
 }
 
+
 WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
     .then(wasmIn => {
         let array = new Uint8Array(wasmIn.instance.exports.memory.buffer, 0, 9);
         array.fill(32);
-        let disableAll = (turn) => {
+
+        const disableAll = (turn) => {
             isPlayer = !turn;
             for (let i = 0; i< 9; ++i ) { 
                     btn[i].disabled = turn || array[i] != 32;
             }
             bottomButtonDisabled(turn);
         }
-        for (let i = 0; i< 9; ++i ) {
+
+        const computerMove = () => {
+            let comChoice = wasmIn.instance.exports.smartChoice(array, 88);
+            array[comChoice] = 88;
+            btn[comChoice].textContent = "X";
+            btn[comChoice].disabled = true;
+            isPlayer = true;
+                    
+            if ( wasmIn.instance.exports.isWinner(array, 88)) {
+                    statusText.textContent ="You lost!";
+                    bottomButtonDisabled(false);
+                    return;
+                } else if (wasmIn.instance.exports.isBoardFull(array)) {
+                    statusText.textContent = "It's a draw!";
+                    bottomButtonDisabled(false);
+                    return;
+                }
+                disableAll(false);
+
+                statusText.textContent = "Player Move";
+        }
+
+        for (let i = 0; i < 9; ++i ) {
             btn[i].addEventListener("click",even => {
                 if (!isPlayer && is4x4 && array[i] != 32 ) return;
                 array[i] = 79;
@@ -55,31 +79,15 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
                     bottomButtonDisabled(false);
                     return;
                 } else if (wasmIn.instance.exports.isBoardFull(array)) {
-                    statusText.textContent = "Is a draw";
+                    statusText.textContent = "It's a draw!";
                     bottomButtonDisabled(false);
                     return;
                 }
 
                 // computer move
                 statusText.textContent = "Computes Move ...";
-                let comChoice = wasmIn.instance.exports.smartChoice(array, 88);
-                array[comChoice] = 88;
-                btn[comChoice].textContent = "X";
-                btn[comChoice].disabled = true;
-                isPlayer = true;
-                    
-                if ( wasmIn.instance.exports.isWinner(array, 88)) {
-                    statusText.textContent ="You lost!";
-                    bottomButtonDisabled(false);
-                    return;
-                } else if (wasmIn.instance.exports.isBoardFull(array)) {
-                    statusText.textContent = "Is a draw";
-                    bottomButtonDisabled(false);
-                    return;
-                }
-                disableAll(false);
-
-                statusText.textContent = "Player Move";
+                setTimeout(computerMove, 0);
+                
             })
         }
         clear.addEventListener("click", ()=> {
@@ -95,18 +103,42 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
         });
     });
 
-    WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"))
+WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"))
     .then(wasmIn => {
         let array = new Uint8Array(wasmIn.instance.exports.memory.buffer, 0, 16);
         array.fill(32);
-        let disableAll = (turn) => {
+
+        const disableAll = (turn) => {
             isPlayer = turn;
             for (let i = 0; i< 16; ++i ) { 
                 btn4x4[i].disabled = turn || array[i] != 32;
             }
             bottomButtonDisabled(turn);
         }
-        for (let i = 0; i< 16; ++i ) {
+
+        const computerMove = () =>  {
+            // computer move
+            let comChoice = wasmIn.instance.exports.smartChoice(array, 88);
+            array[comChoice] = 88;
+            btn4x4[comChoice].textContent = "X";
+            btn4x4[comChoice].disabled = true;
+            isPlayer = true;
+            
+            if (wasmIn.instance.exports.isWinner(array, 88)) {
+                statusText.textContent ="You lost!";
+                bottomButtonDisabled(false);
+                return;
+            } else if (wasmIn.instance.exports.isBoardFull(array)) {
+                statusText.textContent = "It's a draw!";
+                bottomButtonDisabled(false);
+                return;
+            }
+            disableAll(false);
+
+            statusText.textContent = "Player Move";
+            }
+
+        for (let i = 0; i < 16; ++i ) {
             btn4x4[i].addEventListener("click",even => {
                 if (!isPlayer && !is4x4 && array[i] != 32 ) return;
                 array[i] = 79;
@@ -118,33 +150,12 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
                     bottomButtonDisabled(false);
                     return;
                 } else if (wasmIn.instance.exports.isBoardFull(array)) {
-                    statusText.textContent = "Is a draw";
+                    statusText.textContent = "It's a draw!";
                     bottomButtonDisabled(false);
                     return;
                 }
                 statusText.textContent = "Computes Move ...";
-                setTimeout(() =>  {
-                    // computer move
-                
-                let comChoice = wasmIn.instance.exports.smartChoice(array, 88);
-                array[comChoice] = 88;
-                btn4x4[comChoice].textContent = "X";
-                btn4x4[comChoice].disabled = true;
-                isPlayer = true;
-                    
-                if ( wasmIn.instance.exports.isWinner(array, 88)) {
-                    statusText.textContent ="You lost!";
-                    bottomButtonDisabled(false);
-                    return;
-                } else if (wasmIn.instance.exports.isBoardFull(array)) {
-                    statusText.textContent = "Is a draw";
-                    bottomButtonDisabled(false);
-                    return;
-                }
-                disableAll(false);
-
-                statusText.textContent = "Player Move";
-                },0);
+                setTimeout(computerMove,0);
             })
         }
         clear.addEventListener("click", ()=> {
@@ -161,7 +172,7 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
         changeMode.addEventListener("click", () => {
             table3x3.style.display = is4x4? "block" : "none";
             table4x4.style.display = is4x4? "none" : "block";
-            changeMode.textContent = is4x4?  "4x4" : "3x3";
+            changeMode.textContent = is4x4?  "4 x 4" : "3 x 3";
             is4x4 = !is4x4
         })
     });
