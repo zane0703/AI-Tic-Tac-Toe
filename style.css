@@ -3,9 +3,6 @@ body {
     display: flex;
     justify-content: center;
 }
-div {
-
-}
 button {
     background-color: #17a2b8;
     color: white;
@@ -13,12 +10,20 @@ button {
     font-size: 4rem;
     
 }
-table button {
+#s3x3 button {
     height: min(20vh,20vw);
     width:  min(20vh,20vw);;
     
 }
-table button:disabled{
+#s4x4 button {
+    height: min(15vh,15vw);
+    width:  min(15vh,15vw);
+    
+}
+#s4x4 {
+    display: none;
+}
+button:disabled{
     cursor: not-allowed;
 }
 button:enabled:hover {
@@ -29,6 +34,9 @@ button:enabled:hover {
     font-size:  3rem;
     font-weight: bold;
 }
-#clear {
+#bottom {
     width: 100%;
+}
+#bottom>button {
+    width: 50%;
 }
