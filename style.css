@@ -14,13 +14,13 @@ button {
 }
 #s3x3 button {
     height: min(20vh,30vw);
-    width:  min(20vh,30vw);;
-    font-size:  min(20vh,20vw)
+    width:  min(20vh,30vw);
+    font-size:  min(20vh,20vw);
 }
 #s4x4 button {
     height: min(15vh,22vw);
     width:  min(15vh,23vw);
-    font-size:  min(15vh,15vw)
+    font-size:  min(15vh,15vw);
     
 }
 #s4x4 {
