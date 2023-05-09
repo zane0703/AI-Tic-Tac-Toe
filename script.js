@@ -38,8 +38,8 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
         array.fill(32);
         let disableAll = (turn) => {
             isPlayer = !turn;
-            for (let i = 0; i< 16; ++i ) { 
-                    btn4x4[i].disabled = turn || array[i] != 32;
+            for (let i = 0; i< 9; ++i ) { 
+                    btn[i].disabled = turn || array[i] != 32;
             }
             bottomButtonDisabled(turn);
         }
@@ -69,11 +69,11 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
                 isPlayer = true;
                     
                 if ( wasmIn.instance.exports.isWinner(array, 88)) {
-                    status.textContent ="You lost!";
+                    statusText.textContent ="You lost!";
                     bottomButtonDisabled(false);
                     return;
                 } else if (wasmIn.instance.exports.isBoardFull(array)) {
-                    status.textContent = "Is a draw";
+                    statusText.textContent = "Is a draw";
                     bottomButtonDisabled(false);
                     return;
                 }

@@ -1,7 +1,12 @@
-body {
-    background-color: black;
+body>div {
     display: flex;
     justify-content: center;
+}
+body {
+    background-color: black;
+}
+body>p {
+    text-align:  center;
 }
 button {
     background-color: #17a2b8;
