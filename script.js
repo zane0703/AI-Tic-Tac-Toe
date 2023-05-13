@@ -12,6 +12,20 @@ for (let i = 0 ; i < 16; ++i) {
     btn4x4.push(document.getElementById(`btn-4x4-${i}`));
 }
 Object.freeze(btn4x4)
+
+let depthLimit = 6;
+
+document.getElementById("depthLimitSelect").addEventListener("change", event => {
+    let newDepthLimit = parseInt(event.target.value);
+    if (newDepthLimit > 6 && depthLimit < 7) {
+        if (!confirm("WARNING!!\nHigher depth limit will significant increase processing time make sure you have powerful CPU to being setting higher depth limit")) {
+            event.target.value = depthLimit;
+            return;
+        }
+    }
+    depthLimit = newDepthLimit;
+})
+
 /**@type {HTMLButtonElement} */
 const clear = document.getElementById("clear");
 /**@type {HTMLParagraphElement} */
@@ -138,7 +152,7 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"))
 
         const computerMove = () =>  {
             // computer move
-            let comChoice = wasmIn.instance.exports.smartChoice(array, 88, Math.floor(Math.random() * 16), 6);
+            let comChoice = wasmIn.instance.exports.smartChoice(array, 88, Math.floor(Math.random() * 16), depthLimit);
             array[comChoice] = 88; //88 = 'X'
             btn4x4[comChoice].textContent = "X";
             btn4x4[comChoice].disabled = true;

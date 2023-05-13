@@ -23,6 +23,11 @@ button {
     font-size:  min(15vh,15vw);
     
 }
+#s4x4>tbody>tr:first-of-type>td:first-of-type {
+    color: white;
+    font-size: 1rem;
+
+}
 #s4x4 {
     display: none;
 }
@@ -35,10 +40,10 @@ button:enabled:hover {
 #status {
     display: block;
     color: white;
-    font-size:  3rem;
     font-weight: bold;
     text-align: center;
     font-size: min(10vh,10vw);
+    margin: 0;
 }
 #bottom {
     width: 100%;
