@@ -6,11 +6,11 @@
 #include <emscripten.h>
 #endif
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing);
+signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol, char depth, bool isMaximizing, unsigned char depthLimit);
 bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
 bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
 
-int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player){
+int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player, int pos, unsigned char depthLimit){
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
     int bestMove = 0;              // # initialize bestMove
@@ -19,9 +19,10 @@ int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char playe
     int i;
     memcpy(dupBoard, board, sizeof(unsigned char) * 16);
     for (i = 0; i< 16; ++i){
-        if (dupBoard[i] != ' ') continue;
+        pos = (pos + 1) % 16;
+        if (dupBoard[pos] != ' ') continue;
         //# Simulate the move
-        dupBoard[i] = player;
+        dupBoard[pos] = player;
 
 
         //# Find score using Minimax algorithm
@@ -29,22 +30,23 @@ int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char playe
                         player,         // # maximize for Computer (O)
                         player == 'O'? 'X': 'O',       //  # minimize for Human (X)
                         1,               // # depth of search tree
-                        false);  //  # is the next move for O
+                        false, //  # is the next move for O
+                        depthLimit); 
         
         //# Undo the move for simulation
-        dupBoard[i] = ' ';
+        dupBoard[pos] = ' ';
         
         //# Update bestScore if appropriate
         if (score > bestScore){
             bestScore = score;
-            bestMove = i;
+            bestMove = pos;
         }
     }
     //# Return the best move
     return bestMove;
 }
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing){
+signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit){
    /*  ''' Minimax algorithm for the recursion
     ''' */
     //# Terminal conditions for recursion
@@ -54,7 +56,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
         return 10 - depth;
     if (isWinner(board, minSymbol))
         return depth - 10;
-    if (isBoardFull(board) || depth > 5)
+    if (isBoardFull(board) || depth >= depthLimit)
         return 0;
     //# You may use the isWinner and isBoardFull functions if you want
     
@@ -67,7 +69,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
         board[position] = isMaximizing?maxSymbol : minSymbol;
         
         //# Find the score for the move
-        score = minimax(board, maxSymbol, minSymbol, depth+1, !isMaximizing);
+        score = minimax(board, maxSymbol, minSymbol, depth+1, !isMaximizing, depthLimit);
         if (isMaximizing? score> bestScore: score < bestScore) {
             bestScore = score;
         }

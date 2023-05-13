@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -10,18 +11,18 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
 bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
 bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
 
-int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player){
+int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player, int pos){
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
-    int bestMove = 0;              // # initialize bestMove
+    int bestMove = 0, i;              // # initialize bestMove
     unsigned char dupBoard[9];
     signed char score, bestScore = SCHAR_MIN;
-    int i;
     memcpy(dupBoard, board, sizeof(unsigned char) * 9);
     for (i = 0; i< 9; ++i){
-        if (dupBoard[i] != ' ') continue;
+        pos = (pos + 1) % 9;
+        if (dupBoard[pos] != ' ') continue;
         //# Simulate the move
-        dupBoard[i] = player;
+        dupBoard[pos] = player;
 
 
         //# Find score using Minimax algorithm
@@ -32,12 +33,12 @@ int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char playe
                         false);  //  # is the next move for O
         
         //# Undo the move for simulation
-        dupBoard[i] = ' ';
+        dupBoard[pos] = ' ';
         
         //# Update bestScore if appropriate
         if (score > bestScore){
             bestScore = score;
-            bestMove = i;
+            bestMove = pos;
         }
     }
     //# Return the best move
