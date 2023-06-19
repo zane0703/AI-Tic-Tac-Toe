@@ -10,7 +10,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
 bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
 bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
 
-int   smartChoice(unsigned char * board, unsigned char player, int pos, unsigned char depthLimit){
+int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player, int pos, unsigned char depthLimit){
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
     int bestMove = 0;              // # initialize bestMove
