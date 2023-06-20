@@ -85,7 +85,7 @@ function playerMove(wasmIn, array, disableAll, computerMove, playerChoice, even)
     // computer move
     statusText.textContent = "Computes Move ...";
     console.log(2)
-    setTimeout(computerMove, 0);
+    setTimeout(computerMove, 10);
 }
 
 
