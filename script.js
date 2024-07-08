@@ -1,5 +1,7 @@
 let isPlayer = false;
 let is4x4 = false;
+let importOptions = { random2:Math.random }
+importOptions = { env: importOptions, wasi_snapshot_preview1:importOptions }
 /**@type {HTMLButtonElement[]} */
 const btn = [];
 for (let i = 0; i < 9; ++i) {
@@ -46,8 +48,8 @@ function bottomButtonDisabled(disabled) {
     changeMode.disabled = disabled;
 }
 
-function computerMove2(wasmIn, array, disableAll, btn, length) {
-    let comChoice = wasmIn.smartChoice(array, 88, Math.floor(Math.random() * length), depthLimit);
+function computerMove2(wasmIn, array, disableAll, btn) {
+    let comChoice = wasmIn.smartChoice(array, 88, depthLimit);
     array[comChoice] = 88; //88 = 'X'
     btn[comChoice].textContent = "X";
     btn[comChoice].disabled = true;
@@ -84,7 +86,6 @@ function playerMove(wasmIn, array, disableAll, computerMove, playerChoice, even)
     }
     // computer move
     statusText.textContent = "Computes Move ...";
-    console.log(2)
     setTimeout(computerMove, 10);
 }
 
@@ -99,7 +100,7 @@ changeMode.addEventListener("click", () => {
     clear.click();
 });
 /* 3 x 3*/
-WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
+WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"), importOptions )
     .then(wasmIn => {
         let array = new Uint8Array(wasmIn.instance.exports.memory.buffer, 0, 9);
 
@@ -112,7 +113,7 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
             bottomButtonDisabled(turn);
         }
 
-        const computerMove = computerMove2.bind(null, wasmIn.instance.exports, array, disableAll, btn, 9);
+        const computerMove = computerMove2.bind(null, wasmIn.instance.exports, array, disableAll, btn);
         const playerMove2 = playerMove.bind(null, wasmIn.instance.exports, array, disableAll, computerMove);
         const startGame = () => {
             if (is4x4) return;
@@ -135,7 +136,7 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"))
     });
 
 /* 4 x 4 */
-WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"))
+WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"), importOptions)
     .then(wasmIn => {
         let array = new Uint8Array(wasmIn.instance.exports.memory.buffer, 0, 16);
 
@@ -148,7 +149,7 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"))
 
         }
 
-        const computerMove = computerMove2.bind(null, wasmIn.instance.exports, array, disableAll, btn4x4, 16);
+        const computerMove = computerMove2.bind(null, wasmIn.instance.exports, array, disableAll, btn4x4);
         const playerMove2 = playerMove.bind(null, wasmIn.instance.exports, array, disableAll, computerMove);
         const startGame = () => {
             if (!is4x4) return;

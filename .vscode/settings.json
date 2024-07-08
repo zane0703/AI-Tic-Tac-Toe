@@ -1,5 +1,9 @@
 {
     "files.associations": {
         "__node_handle": "c"
+    },
+    "cmake.cmakePath": "C:\\Users\\Zane\\Downloads\\tools\\cmake\\bin\\cmake.exe",
+    "cmake.configureSettings": {
+        "CMAKE_PREFIX_PATH":"C:\\Qt\\6.10.2\\mingw_64"
     }
 }
