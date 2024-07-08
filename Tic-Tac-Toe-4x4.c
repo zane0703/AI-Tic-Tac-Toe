@@ -9,10 +9,12 @@
 signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol, char depth, bool isMaximizing, unsigned char depthLimit);
 bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
 bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
+extern double random2(void);
 
-int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player, int pos, unsigned char depthLimit){
+int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player, unsigned char depthLimit){
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
+    int pos = (int)(random2() * 9);
     int bestMove = 0;              // # initialize bestMove
     unsigned char dupBoard[16];
     signed char score, bestScore = SCHAR_MIN;

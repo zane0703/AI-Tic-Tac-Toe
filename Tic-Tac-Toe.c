@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifdef __EMSCRIPTEN__
@@ -10,10 +11,13 @@
 signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing);
 bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
 bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
+extern double random2(void);
 
-int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player, int pos){
+int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player){
+   
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
+    int pos = (int)(random2() * 9);
     int bestMove = 0, i;              // # initialize bestMove
     unsigned char dupBoard[9];
     signed char score, bestScore = SCHAR_MIN;
