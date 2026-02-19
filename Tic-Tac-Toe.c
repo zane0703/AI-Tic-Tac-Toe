@@ -1,23 +1,15 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include "Tic-Tac-Toe.h"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing);
-bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
-bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
-extern double random2(void);
-
-int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player){
+int smartChoice(unsigned char * board, unsigned char player){
    
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
-    int pos = (int)(random2() * 9);
+    int pos = (int)(rand() % 9);
     int bestMove = 0, i;              // # initialize bestMove
     unsigned char dupBoard[9];
     signed char score, bestScore = SCHAR_MIN;
@@ -96,13 +88,13 @@ bool isWinner(unsigned char* board, unsigned char player){
     '''
     # Check for 3 valid marks denoting a Win */
     return (((board[0] == player) && (board[1] == player) && (board[2] == player)) ||// or # Top Row
-           ((board[3] == player) && (board[4] == player) && (board[5] == player)) ||// or # Middle Row
-           ((board[6] == player) && (board[7] == player) && (board[8] == player)) ||// or # Bottom Row
-           ((board[0] == player) && (board[3] == player) && (board[6] == player)) ||// or # Left Column
-           ((board[1] == player) && (board[4] == player) && (board[7] == player)) ||//or # Center Column
-           ((board[2] == player) && (board[5] == player) && (board[8] == player)) ||//or # Right Column
-           ((board[0] == player) && (board[4] == player) && (board[8] == player)) ||// or # Diagonal
-           ((board[6] == player) && (board[4] == player) && (board[2] == player))); //  # Diagonal
+            ((board[3] == player) && (board[4] == player) && (board[5] == player)) ||// or # Middle Row
+            ((board[6] == player) && (board[7] == player) && (board[8] == player)) ||// or # Bottom Row
+            ((board[0] == player) && (board[3] == player) && (board[6] == player)) ||// or # Left Column
+            ((board[1] == player) && (board[4] == player) && (board[7] == player)) ||//or # Center Column
+            ((board[2] == player) && (board[5] == player) && (board[8] == player)) ||//or # Right Column
+            ((board[0] == player) && (board[4] == player) && (board[8] == player)) ||// or # Diagonal
+            ((board[6] == player) && (board[4] == player) && (board[2] == player))); //  # Diagonal
 }
 
 bool isBoardFull(unsigned char *board) {
@@ -110,7 +102,7 @@ bool isBoardFull(unsigned char *board) {
     ''' */
     int i;
     for (i = 0; i < 9; ++i) {
-        if  (board[i] == ' ') return false;
+        if(board[i] == ' ') return false;
     }
     return true;
 }
