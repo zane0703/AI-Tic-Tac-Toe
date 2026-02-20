@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include "tictactoe3x3form.h"
+#include "tictactoe4x4form.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,25 +19,18 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-     void on_buttonBox_Clicked(int index);
+
 
 private slots:
-    void on_buttonBox0_Clicked();
-    void on_buttonBox1_Clicked();
-    void on_buttonBox2_Clicked();
-    void on_buttonBox3_Clicked();
-    void on_buttonBox4_Clicked();
-    void on_buttonBox5_Clicked();
-    void on_buttonBox6_Clicked();
-    void on_buttonBox7_Clicked();
-    void on_buttonBox8_Clicked();
     void on_resetButton_Clicked();
+    void on_changeButton_Clicked();
 
 
 private:
+    TicTacToe3x3Form* m_3x3Form;
+    TicTacToe4x4Form* m_4x4Form;
     Ui::MainWindow *ui;
-    QPushButton* buttomBox[9];
-    bool gameEnd;
-    unsigned char board[9];
+    bool is4x4;
+
 };
 #endif // MAINWINDOW_H

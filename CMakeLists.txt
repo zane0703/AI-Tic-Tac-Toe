@@ -20,12 +20,26 @@ set(PROJECT_SOURCES
         mainwindow.ui
         Tic-Tac-Toe.c
         Tic-Tac-Toe.h
+        tictactoe3x3form.h tictactoe3x3form.cpp tictactoe3x3form.ui
+        tictactoe4x4form.h tictactoe4x4form.cpp tictactoe4x4form.ui
+        Tic-Tac-Toe-4x4.h
+        Tic-Tac-Toe-4x4.c
 )
-
+if(WIN32)
+    enable_language(RC)
+    set(APP_ICON_RESOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/appico.rc )
+endif()
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Tic-Tac-Toe
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        resources.qrc
+         ${APP_ICON_RESOURCE}
+        tictactoe3x3form.h tictactoe3x3form.cpp tictactoe3x3form.ui
+        tictactoe4x4form.h tictactoe4x4form.cpp tictactoe4x4form.ui
+        Tic-Tac-Toe-4x4.h
+        Tic-Tac-Toe-4x4.c
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET qtTest APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -43,11 +57,14 @@ else()
     else()
         add_executable(Tic-Tac-Toe
             ${PROJECT_SOURCES}
+             ${APP_ICON_RESOURCE}
         )
     endif()
 
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
+
+
 
 target_link_libraries(Tic-Tac-Toe PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 

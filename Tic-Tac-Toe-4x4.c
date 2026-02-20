@@ -1,20 +1,14 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
+#include "Tic-Tac-Toe-4x4.h"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol, char depth, bool isMaximizing, unsigned char depthLimit);
-bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
-bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
-extern double random2(void);
-
-int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player, unsigned char depthLimit){
+int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit){
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
-    int pos = (int)(random2() * 9);
+    int pos = (int)(rand() % 9);
     int bestMove = 0;              // # initialize bestMove
     unsigned char dupBoard[16];
     signed char score, bestScore = SCHAR_MIN;
@@ -28,7 +22,7 @@ int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player
 
 
         //# Find score using Minimax algorithm
-        score = minimax(dupBoard,        // # use board's copy
+        score = minimax4(dupBoard,        // # use board's copy
                         player,         // # maximize for Computer (O)
                         player == 'O'? 'X': 'O',       //  # minimize for Human (X)
                         1,               // # depth of search tree
@@ -48,17 +42,17 @@ int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player
     return bestMove;
 }
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit){
+signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit){
    /*  ''' Minimax algorithm for the recursion
     ''' */
     //# Terminal conditions for recursion
     signed char bestScore = isMaximizing? SCHAR_MIN: SCHAR_MAX , score;
     char position, value;
-    if (isWinner(board, maxSymbol))
+    if (isWinner4(board, maxSymbol))
         return 10 - depth;
-    if (isWinner(board, minSymbol))
+    if (isWinner4(board, minSymbol))
         return depth - 10;
-    if (isBoardFull(board) || depth >= depthLimit)
+    if (isBoardFull4(board) || depth >= depthLimit)
         return 0;
     //# You may use the isWinner and isBoardFull functions if you want
     
@@ -72,7 +66,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
         board[position] = isMaximizing?maxSymbol : minSymbol;
         
         //# Find the score for the move
-        score = minimax(board, maxSymbol, minSymbol, depth+1, !isMaximizing, depthLimit);
+        score = minimax4(board, maxSymbol, minSymbol, depth+1, !isMaximizing, depthLimit);
         if (isMaximizing? score> bestScore: score < bestScore) {
             bestScore = score;
         }
@@ -91,7 +85,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
     //# Remove the following exception when you complete this function
 }
 
-bool isWinner(unsigned char* board, unsigned char player){
+bool isWinner4(unsigned char* board, unsigned char player){
     /* ''' Checks if Player has Won the game
     '''
     
@@ -108,7 +102,7 @@ bool isWinner(unsigned char* board, unsigned char player){
            ((board[3] == player) && ( board[6] == player) && ( board[9] == player) && ( board[12] == player)));   //# Diagonal  
 }
 
-bool isBoardFull(unsigned char *board) {
+bool isBoardFull4(unsigned char *board) {
     /* ''' Checks if the Board is Full
     ''' */
     int i;
