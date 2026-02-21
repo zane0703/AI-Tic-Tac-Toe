@@ -106,14 +106,15 @@ void TicTacToe3x3Form::on_resetButton_Clicked() {
         board[i] = ' ';
     }
     this->isPlayerMove = rand()&1;
+    if(!worker.isNull()) {
+        worker->abort();
+    }
     if (this->isPlayerMove) {
         gameStatus->setText("Player Move");
     } else {
         computerMove();
     }
-    if(!worker.isNull()) {
-        worker->abort();
-    }
+
 }
 void TicTacToe3x3Form::on_computerMove_Result(int computeChoice){
     this->board[computeChoice] = 'X';
