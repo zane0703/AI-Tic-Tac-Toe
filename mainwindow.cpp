@@ -10,11 +10,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_3x3Form = new TicTacToe3x3Form(this, ui->gameStatus);
     m_4x4Form = new TicTacToe4x4Form(this, ui->gameStatus);
     ui->stackedWidget->addWidget(m_3x3Form);
-     ui->stackedWidget->addWidget(m_4x4Form);
+    ui->stackedWidget->addWidget(m_4x4Form);
     ui->stackedWidget->setCurrentWidget(m_3x3Form);
     m_3x3Form->on_resetButton_Clicked();
-    connect(ui->resetButton, SIGNAL(clicked()), this ,SLOT(on_resetButton_Clicked()));
-    connect(ui->changeButton, SIGNAL(clicked()), this ,SLOT(on_changeButton_Clicked()));
+    connect(ui->resetButton, &QPushButton::clicked, this, &MainWindow::on_resetButton_Clicked);
+    connect(ui->changeButton, &QPushButton::clicked, this, &MainWindow::on_changeButton_Clicked);
 }
 
 MainWindow::~MainWindow()

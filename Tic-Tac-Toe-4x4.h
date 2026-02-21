@@ -6,7 +6,7 @@ extern "C" {
 signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit);
 bool isWinner4(unsigned char* board, unsigned char player);
 bool isBoardFull4(unsigned char *board);
-int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit);
+int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit, int firstPos);
 #ifdef __cplusplus
 }
 #endif

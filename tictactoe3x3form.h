@@ -4,11 +4,27 @@
 #include <QWidget>
 #include <QPushButton>
 #include <qlabel>
+#include <QObject>
+#include <qthread>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TicTacToe3x3Form;
 }
 QT_END_NAMESPACE
+
+class Worker3x3 : public QObject
+{
+    Q_OBJECT
+public:
+    Worker3x3(unsigned char * board);
+public slots:
+    void doWork();
+signals:
+    void workFinished(int computeChoice);
+private:
+    unsigned char * board;
+};
+
 class TicTacToe3x3Form : public QWidget
 {
     Q_OBJECT
@@ -27,6 +43,7 @@ private slots:
     void on_buttonBox6_Clicked();
     void on_buttonBox7_Clicked();
     void on_buttonBox8_Clicked();
+    void on_computerMove_Result(int computeChoice);
 
 private:
     Ui::TicTacToe3x3Form *ui;
@@ -36,6 +53,8 @@ private:
     void playerMove(int index);
     void computerMove();
     QLabel *gameStatus;
+    Worker3x3 *worker;
+    QThread *thread;
 };
 
 #endif // TICTACTOE3X3FORM_H

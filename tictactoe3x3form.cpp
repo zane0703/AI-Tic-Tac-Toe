@@ -1,6 +1,7 @@
 #include "tictactoe3x3form.h"
 #include "ui_tictactoe3x3form.h"
 #include "Tic-Tac-Toe.h"
+#include <QDebug>
 
 TicTacToe3x3Form::TicTacToe3x3Form(QWidget *parent, QLabel *gameStatus)
     : QWidget(parent)
@@ -17,15 +18,15 @@ TicTacToe3x3Form::TicTacToe3x3Form(QWidget *parent, QLabel *gameStatus)
     this->buttomBox[6] = ui->buttonBox6;
     this->buttomBox[7] = ui->buttonBox7;
     this->buttomBox[8] = ui->buttonBox8;
-    connect(ui->buttonBox0, SIGNAL(clicked()), this ,SLOT(on_buttonBox0_Clicked()));
-    connect(ui->buttonBox1, SIGNAL(clicked()), this ,SLOT(on_buttonBox1_Clicked()));
-    connect(ui->buttonBox2, SIGNAL(clicked()), this ,SLOT(on_buttonBox2_Clicked()));
-    connect(ui->buttonBox3, SIGNAL(clicked()), this ,SLOT(on_buttonBox3_Clicked()));
-    connect(ui->buttonBox4, SIGNAL(clicked()), this ,SLOT(on_buttonBox4_Clicked()));
-    connect(ui->buttonBox5, SIGNAL(clicked()), this ,SLOT(on_buttonBox5_Clicked()));
-    connect(ui->buttonBox6, SIGNAL(clicked()), this ,SLOT(on_buttonBox6_Clicked()));
-    connect(ui->buttonBox7, SIGNAL(clicked()), this ,SLOT(on_buttonBox7_Clicked()));
-    connect(ui->buttonBox8, SIGNAL(clicked()), this ,SLOT(on_buttonBox8_Clicked()));
+    connect(ui->buttonBox0, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox0_Clicked);
+    connect(ui->buttonBox1, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox1_Clicked);
+    connect(ui->buttonBox2, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox2_Clicked);
+    connect(ui->buttonBox3, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox3_Clicked);
+    connect(ui->buttonBox4, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox4_Clicked);
+    connect(ui->buttonBox5, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox5_Clicked);
+    connect(ui->buttonBox6, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox6_Clicked);
+    connect(ui->buttonBox7, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox7_Clicked);
+    connect(ui->buttonBox8, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox8_Clicked);
 }
 
 TicTacToe3x3Form::~TicTacToe3x3Form()
@@ -83,19 +84,16 @@ void TicTacToe3x3Form::playerMove(int playerChoice){
 void TicTacToe3x3Form::computerMove(){
     int computeChoice;
     gameStatus->setText("Computer Move");
-    computeChoice = smartChoice(board, 'X');
-    this->board[computeChoice] = 'X';
-    this->buttomBox[computeChoice]->setText("X");
-    if (isWinner(board, 'X')) {
-        gameStatus->setText("You lost!");
-        return;
-    }
-    if (isBoardFull(board)) {
-        gameStatus->setText( "It's a draw!");
-        return;
-    }
-    this->isPlayerMove = true;
-    gameStatus->setText("Player Move");
+    worker = new Worker3x3(board);
+    thread = new QThread;
+    worker->moveToThread(thread);
+    connect(thread, &QThread::started, worker, &Worker3x3::doWork );
+    connect(worker, &Worker3x3::workFinished, this, &TicTacToe3x3Form::on_computerMove_Result);
+    connect(worker, &Worker3x3::workFinished, thread, &QThread::quit);
+
+    connect(worker, &Worker3x3::workFinished, worker, &Worker3x3::deleteLater);
+    connect(thread, &QThread::finished,  thread, &QThread::deleteLater);
+    thread->start();
 }
 
 void TicTacToe3x3Form::on_resetButton_Clicked() {
@@ -110,4 +108,26 @@ void TicTacToe3x3Form::on_resetButton_Clicked() {
     } else {
         computerMove();
     }
+}
+void TicTacToe3x3Form::on_computerMove_Result(int computeChoice){
+    this->board[computeChoice] = 'X';
+    this->buttomBox[computeChoice]->setText("X");
+    if (isWinner(board, 'X')) {
+        gameStatus->setText("You lost!");
+        return;
+    }
+    if (isBoardFull(board)) {
+        gameStatus->setText( "It's a draw!");
+        return;
+    }
+    this->isPlayerMove = true;
+    gameStatus->setText("Player Move");
+}
+Worker3x3::Worker3x3(unsigned char * board) {
+    this->board = board;
+}
+
+void Worker3x3::doWork() {
+    int computeChoice = smartChoice(board, 'X');
+    emit workFinished(computeChoice);
 }

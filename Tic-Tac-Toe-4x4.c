@@ -5,41 +5,43 @@
 #include "Tic-Tac-Toe-4x4.h"
 
 
-int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit){
+int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit, int firstPos){
   /*   ''' Returns a smart choice using an AI algorithm
-    ''' */
-    int pos = (int)(rand() % 9);
-    int bestMove = 0;              // # initialize bestMove
+    ''' */            // # initialize bestMove
     unsigned char dupBoard[16];
-    signed char score, bestScore = SCHAR_MIN;
+    signed char score, bestScore = SCHAR_MAX;
     int i;
+    unsigned char minSymbol = player == 'O'? 'X': 'O';
     memcpy(dupBoard, board, sizeof(unsigned char) * 16);
+    dupBoard[firstPos] = player;
+    if (isWinner4(dupBoard, player))
+        return 9;
+    if (isWinner4(dupBoard, minSymbol))
+        return -9;
+    if (isBoardFull4(dupBoard))
+        return 0;
     for (i = 0; i< 16; ++i){
-        pos = (pos + 1) % 16;
-        if (dupBoard[pos] != ' ') continue;
+        if (dupBoard[i] != ' ') continue;
         //# Simulate the move
-        dupBoard[pos] = player;
-
-
+        dupBoard[i] = minSymbol;
         //# Find score using Minimax algorithm
-        score = minimax4(dupBoard,        // # use board's copy
-                        player,         // # maximize for Computer (O)
-                        player == 'O'? 'X': 'O',       //  # minimize for Human (X)
-                        1,               // # depth of search tree
-                        false, //  # is the next move for O
+        score = minimax4(dupBoard,
+                        player,        // # use board's copy
+                        minSymbol,         // # maximize for Computer (O)       //  # minimize for Human (X)
+                        2,               // # depth of search tree
+                        true, //  # is the next move for O
                         depthLimit); 
         
         //# Undo the move for simulation
-        dupBoard[pos] = ' ';
+        dupBoard[i] = ' ';
         
         //# Update bestScore if appropriate
-        if (score > bestScore){
+        if (score < bestScore){
             bestScore = score;
-            bestMove = pos;
         }
     }
     //# Return the best move
-    return bestMove;
+    return bestScore;
 }
 
 signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit){

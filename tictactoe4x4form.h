@@ -4,11 +4,27 @@
 #include <QWidget>
 #include <QPushButton>
 #include <qlabel>
+#include <QObject>
+#include <qthread>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TicTacToe4x4Form;
 }
 QT_END_NAMESPACE
+
+class Worker : public QObject
+{
+    Q_OBJECT
+public:
+    Worker(unsigned char * board, unsigned char deapLimit);
+public slots:
+    void doWork();
+signals:
+    void workFinished(int computeChoice);
+private:
+    unsigned char * board;
+    unsigned char depthLimit;
+};
 
 class TicTacToe4x4Form : public QWidget
 {
@@ -35,6 +51,7 @@ private slots:
     void on_buttonBox13_Clicked();
     void on_buttonBox14_Clicked();
     void on_buttonBox15_Clicked();
+    void on_computerMove_Result(int computeChoice);
 
 
 private:
@@ -45,6 +62,10 @@ private:
     void playerMove(int index);
     void computerMove();
     QLabel *gameStatus;
+    Worker *worker;
+    QThread *thread;
 };
+
+
 
 #endif // TICTACTOE4X4FORM_H

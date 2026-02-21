@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "Tic-Tac-Toe.h"
 
 
@@ -9,10 +10,13 @@ int smartChoice(unsigned char * board, unsigned char player){
    
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
-    int pos = (int)(rand() % 9);
+
+    int pos;
     int bestMove = 0, i;              // # initialize bestMove
     unsigned char dupBoard[9];
     signed char score, bestScore = SCHAR_MIN;
+    srand ( time(NULL) );
+    pos = (int)(rand() % 9);
     memcpy(dupBoard, board, sizeof(unsigned char) * 9);
     for (i = 0; i< 9; ++i){
         pos = (pos + 1) % 9;

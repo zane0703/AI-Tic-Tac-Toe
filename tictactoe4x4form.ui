@@ -400,7 +400,7 @@
        <item>
         <widget class="QComboBox" name="depthLimitcomboBox">
          <property name="currentText">
-          <string>5</string>
+          <string>6</string>
          </property>
          <item>
           <property name="text">
