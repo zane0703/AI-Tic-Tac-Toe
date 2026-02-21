@@ -31,6 +31,9 @@ TicTacToe3x3Form::TicTacToe3x3Form(QWidget *parent, QLabel *gameStatus)
 
 TicTacToe3x3Form::~TicTacToe3x3Form()
 {
+    if(!worker.isNull()) {
+        worker->abort();
+    }
     delete ui;
 }
 
@@ -88,10 +91,10 @@ void TicTacToe3x3Form::computerMove(){
     thread = new QThread;
     worker->moveToThread(thread);
     connect(thread, &QThread::started, worker, &Worker3x3::doWork );
-    connect(worker, &Worker3x3::workFinished, this, &TicTacToe3x3Form::on_computerMove_Result);
-    connect(worker, &Worker3x3::workFinished, thread, &QThread::quit);
+    connect(worker, &Worker3x3::onResult, this, &TicTacToe3x3Form::on_computerMove_Result);
+    connect(worker, &Worker3x3::finished, thread, &QThread::quit);
 
-    connect(worker, &Worker3x3::workFinished, worker, &Worker3x3::deleteLater);
+    connect(worker, &Worker3x3::finished, worker, &Worker3x3::deleteLater);
     connect(thread, &QThread::finished,  thread, &QThread::deleteLater);
     thread->start();
 }
@@ -102,11 +105,14 @@ void TicTacToe3x3Form::on_resetButton_Clicked() {
         buttomBox[i]->setText(" ");
         board[i] = ' ';
     }
-    this->isPlayerMove = rand()%2;
+    this->isPlayerMove = rand()&1;
     if (this->isPlayerMove) {
         gameStatus->setText("Player Move");
     } else {
         computerMove();
+    }
+    if(!worker.isNull()) {
+        worker->abort();
     }
 }
 void TicTacToe3x3Form::on_computerMove_Result(int computeChoice){
@@ -125,9 +131,19 @@ void TicTacToe3x3Form::on_computerMove_Result(int computeChoice){
 }
 Worker3x3::Worker3x3(unsigned char * board) {
     this->board = board;
+    isAbort = false;
 }
 
 void Worker3x3::doWork() {
-    int computeChoice = smartChoice(board, 'X');
-    emit workFinished(computeChoice);
+    int computeChoice = smartChoice(board, 'X', &isAbort);
+    if(isAbort) {
+        emit finished();
+        return;
+    }
+    emit onResult(computeChoice);
+    emit finished();
+}
+
+void Worker3x3::abort() {
+    isAbort = true;
 }

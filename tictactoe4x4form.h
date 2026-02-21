@@ -6,6 +6,9 @@
 #include <qlabel>
 #include <QObject>
 #include <qthread>
+#include <qpointer>
+#include <QtConcurrent/QtConcurrent>
+#include <QFuture>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TicTacToe4x4Form;
@@ -17,13 +20,17 @@ class Worker : public QObject
     Q_OBJECT
 public:
     Worker(unsigned char * board, unsigned char deapLimit);
+    void abort();
 public slots:
     void doWork();
 signals:
-    void workFinished(int computeChoice);
+    void finished();
+    void onResult(int computeChoice);
 private:
     unsigned char * board;
     unsigned char depthLimit;
+    QFuture<int> futures[16];
+    bool isAbort;
 };
 
 class TicTacToe4x4Form : public QWidget
@@ -62,8 +69,8 @@ private:
     void playerMove(int index);
     void computerMove();
     QLabel *gameStatus;
-    Worker *worker;
-    QThread *thread;
+    QPointer<Worker> worker;
+    QPointer<QThread> thread;
 };
 
 

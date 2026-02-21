@@ -6,6 +6,7 @@
 #include <qlabel>
 #include <QObject>
 #include <qthread>
+#include <qpointer.h>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TicTacToe3x3Form;
@@ -17,12 +18,15 @@ class Worker3x3 : public QObject
     Q_OBJECT
 public:
     Worker3x3(unsigned char * board);
+    void abort();
 public slots:
     void doWork();
 signals:
-    void workFinished(int computeChoice);
+    void finished();
+    void onResult(int computeChoice);
 private:
     unsigned char * board;
+    bool isAbort;
 };
 
 class TicTacToe3x3Form : public QWidget
@@ -53,8 +57,9 @@ private:
     void playerMove(int index);
     void computerMove();
     QLabel *gameStatus;
-    Worker3x3 *worker;
-    QThread *thread;
+    QPointer<Worker3x3> worker;
+    QPointer<QThread> thread;
+
 };
 
 #endif // TICTACTOE3X3FORM_H

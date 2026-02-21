@@ -5,7 +5,7 @@
 #include "Tic-Tac-Toe-4x4.h"
 
 
-int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit, int firstPos){
+int smartChoice4(unsigned char * board, unsigned char player, unsigned char depthLimit, int firstPos, bool* isAbort){
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */            // # initialize bestMove
     unsigned char dupBoard[16];
@@ -18,7 +18,7 @@ int smartChoice4(unsigned char * board, unsigned char player, unsigned char dept
         return 9;
     if (isWinner4(dupBoard, minSymbol))
         return -9;
-    if (isBoardFull4(dupBoard))
+    if (isBoardFull4(dupBoard)|| *isAbort)
         return 0;
     for (i = 0; i< 16; ++i){
         if (dupBoard[i] != ' ') continue;
@@ -30,7 +30,8 @@ int smartChoice4(unsigned char * board, unsigned char player, unsigned char dept
                         minSymbol,         // # maximize for Computer (O)       //  # minimize for Human (X)
                         2,               // # depth of search tree
                         true, //  # is the next move for O
-                        depthLimit); 
+                        depthLimit,
+                        isAbort);
         
         //# Undo the move for simulation
         dupBoard[i] = ' ';
@@ -44,7 +45,7 @@ int smartChoice4(unsigned char * board, unsigned char player, unsigned char dept
     return bestScore;
 }
 
-signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit){
+signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit, bool* isAbort){
    /*  ''' Minimax algorithm for the recursion
     ''' */
     //# Terminal conditions for recursion
@@ -54,7 +55,7 @@ signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned cha
         return 10 - depth;
     if (isWinner4(board, minSymbol))
         return depth - 10;
-    if (isBoardFull4(board) || depth >= depthLimit)
+    if (isBoardFull4(board) || depth >= depthLimit|| *isAbort)
         return 0;
     //# You may use the isWinner and isBoardFull functions if you want
     
@@ -68,7 +69,7 @@ signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned cha
         board[position] = isMaximizing?maxSymbol : minSymbol;
         
         //# Find the score for the move
-        score = minimax4(board, maxSymbol, minSymbol, depth+1, !isMaximizing, depthLimit);
+        score = minimax4(board, maxSymbol, minSymbol, depth+1, !isMaximizing, depthLimit, isAbort);
         if (isMaximizing? score> bestScore: score < bestScore) {
             bestScore = score;
         }

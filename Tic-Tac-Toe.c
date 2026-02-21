@@ -6,7 +6,7 @@
 #include "Tic-Tac-Toe.h"
 
 
-int smartChoice(unsigned char * board, unsigned char player){
+int smartChoice(unsigned char * board, unsigned char player, bool* isAbort){
    
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
@@ -30,7 +30,8 @@ int smartChoice(unsigned char * board, unsigned char player){
                         player,         // # maximize for Computer (O)
                         player == 'O'? 'X': 'O',       //  # minimize for Human (X)
                         1,               // # depth of search tree
-                        false);  //  # is the next move for O
+                        false
+                        ,isAbort);  //  # is the next move for O
         
         //# Undo the move for simulation
         dupBoard[pos] = ' ';
@@ -45,7 +46,7 @@ int smartChoice(unsigned char * board, unsigned char player){
     return bestMove;
 }
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing){
+signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, bool* isAbort){
    /*  ''' Minimax algorithm for the recursion
     ''' */
     //# Terminal conditions for recursion
@@ -55,7 +56,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
         return 10 - depth;
     if (isWinner(board, minSymbol))
         return depth - 10;
-    if (isBoardFull(board))
+    if (isBoardFull(board) || *isAbort)
         return 0;
     //# You may use the isWinner and isBoardFull functions if you want
     
@@ -68,7 +69,7 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
         board[position] = isMaximizing?maxSymbol : minSymbol;
         
         //# Find the score for the move
-        score = minimax(board, maxSymbol, minSymbol, depth+1, !isMaximizing);
+        score = minimax(board, maxSymbol, minSymbol, depth+1, !isMaximizing, isAbort);
         if (isMaximizing? score> bestScore: score < bestScore) {
             bestScore = score;
         }

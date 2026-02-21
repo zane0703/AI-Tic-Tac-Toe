@@ -3,9 +3,6 @@
 #include "Tic-Tac-Toe-4x4.h"
 #include <stdlib.h>
 #include <QString>
-#include <QtConcurrent/QtConcurrent>
-#include <QFuture>
-#include <QRandomGenerator>
 #include <time.h>
 #include <QDebug>
 
@@ -55,12 +52,9 @@ TicTacToe4x4Form::TicTacToe4x4Form(QWidget *parent, QLabel *gameStatus)
 
 TicTacToe4x4Form::~TicTacToe4x4Form()
 {
-    // if (worker != nullptr){
-    //     delete worker;
-    // }
-    // if (thread != nullptr) {
-    //     delete thread;
-    // }
+    if (!worker.isNull()) {
+        worker->abort();
+    }
     delete ui;
 }
 
@@ -118,6 +112,7 @@ void TicTacToe4x4Form::playerMove(int playerChoice){
     if(this->board[playerChoice] != ' ' || !this->isPlayerMove) {
         return;
     }
+
     this->isPlayerMove = false;
     this->board[playerChoice] = 'O';
     this->buttomBox[playerChoice]->setText("O");
@@ -142,10 +137,10 @@ void TicTacToe4x4Form::computerMove(){
     thread = new QThread;
     worker->moveToThread(thread);
     connect(thread, &QThread::started, worker, &Worker::doWork );
-    connect(worker, &Worker::workFinished, this, &TicTacToe4x4Form::on_computerMove_Result);
-    connect(worker, &Worker::workFinished, thread, &QThread::quit);
+    connect(worker, &Worker::onResult, this, &TicTacToe4x4Form::on_computerMove_Result);
+    connect(worker, &Worker::finished, thread, &QThread::quit);
 
-    connect(worker, &Worker::workFinished, worker, &Worker::deleteLater);
+    connect(worker, &Worker::finished, worker, &Worker::deleteLater);
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
     thread->start();
 }
@@ -166,12 +161,14 @@ void TicTacToe4x4Form::on_computerMove_Result(int computeChoice) {
 
 void TicTacToe4x4Form::on_resetButton_Clicked() {
     int i;
-
     for (i = 0; i< 16;++i) {
         buttomBox[i]->setText(" ");
         board[i] = ' ';
     }
-    this->isPlayerMove = rand()%2;
+    if (!worker.isNull()) {
+        worker->abort();
+    }
+    this->isPlayerMove = rand() & 1;
     if (this->isPlayerMove) {
         gameStatus->setText("Player Move");
     } else {
@@ -181,6 +178,7 @@ void TicTacToe4x4Form::on_resetButton_Clicked() {
 Worker::Worker(unsigned char * board, unsigned char deapLimit) {
     this->board = board;
     this->depthLimit = deapLimit;
+    this->isAbort = false;
 }
 
 
@@ -191,20 +189,28 @@ void Worker::doWork() {
     srand ( time(NULL) );
     pos = (int)(rand() % 16);
     qDebug()<< pos;
-    QFuture<int> futures[16];
     for (i = 0; i< 16; ++i){
         pos = (pos + 1) % 16;
         if (board[pos] != ' ') continue;
+        if (isAbort) {
+            emit finished();
+            return;
+        }
         //# Simulate the move
         storePos[j] = pos;
         futures[j++] = QtConcurrent::run(smartChoice4,
                                          board,// # use board's copy
                                          player,         // # maximize for Computer (O)
                                          depthLimit,
-                                         pos);
+                                         pos,
+                                         &isAbort);
     }
     for (i = 0; i <j; ++i) {
         futures[i].waitForFinished();
+        if (isAbort) {
+            emit finished();
+            return;
+        }
         score = futures[i].result();
         if (score > bestScore){
             bestScore = score;
@@ -214,5 +220,9 @@ void Worker::doWork() {
     }
 
     //# Return the best move
-    emit workFinished(bestMove);
+    emit onResult(bestMove);
+    emit finished();
+}
+void Worker::abort() {
+    isAbort = true;
 }
