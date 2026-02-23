@@ -37,6 +37,7 @@ public:
     explicit TicTacToe3x3Form(QWidget *parent = nullptr, QLabel *gameStatus = nullptr);
     ~TicTacToe3x3Form();
     void on_resetButton_Clicked();
+    void abort();
 private slots:
     void on_buttonBox0_Clicked();
     void on_buttonBox1_Clicked();
@@ -50,15 +51,18 @@ private slots:
     void on_computerMove_Result(int computeChoice);
 
 private:
-    Ui::TicTacToe3x3Form *ui;
-    QPushButton* buttomBox[9];
     bool isPlayerMove;
     unsigned char board[9];
     void playerMove(int index);
     void computerMove();
+    void setWinLine(QColor colour, unsigned char winLine);
+    void setBtnColour(QColor colour, unsigned int btnIndex);
+    Ui::TicTacToe3x3Form *ui;
+    QPushButton* buttomBox[9];
     QLabel *gameStatus;
     QPointer<Worker3x3> worker;
     QPointer<QThread> thread;
+    QColor defaultBtnColor;
 
 };
 

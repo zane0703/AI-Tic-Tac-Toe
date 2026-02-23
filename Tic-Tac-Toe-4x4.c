@@ -45,7 +45,7 @@ int smartChoice4(unsigned char * board, unsigned char player, unsigned char dept
     return bestScore;
 }
 
-signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, unsigned char depthLimit, bool* isAbort){
+signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,unsigned char depth, bool isMaximizing, unsigned char depthLimit, bool* isAbort){
    /*  ''' Minimax algorithm for the recursion
     ''' */
     //# Terminal conditions for recursion
@@ -88,21 +88,32 @@ signed char minimax4(unsigned char* board, unsigned char maxSymbol, unsigned cha
     //# Remove the following exception when you complete this function
 }
 
-bool isWinner4(unsigned char* board, unsigned char player){
+unsigned char isWinner4(unsigned char* board, unsigned char player){
     /* ''' Checks if Player has Won the game
     '''
     
     # Check for 3 valid marks denoting a Win */
-    return (((board[0] == player) && (board[1] == player) && ( board[2] == player) && ( board[3] == player)) || //or # Top Row
-           ((board[4] == player) && ( board[5] == player) && ( board[6] == player) && ( board[7] == player)) ||//or # Middle Top Row
-           ((board[8] == player) && ( board[9] == player) && ( board[10] == player) && ( board[11] == player)) ||//or # Middle Bottom Row
-           ((board[12] == player) && ( board[13]  == player) && ( board[14] == player) && ( board[15] == player)) ||//or # Bottom Row
-           ((board[0] == player) && ( board[4] == player) && ( board[8] == player) && ( board[12] == player)) ||//or # Left Column
-           ((board[1] == player) && ( board[5] == player) && ( board[9]  == player) && ( board[13] == player)) ||//or # Center left Column
-           ((board[2] == player) && ( board[6] == player) && ( board[10]  == player) && ( board[14] == player)) ||//or # Center right Column
-           ((board[3] == player) && ( board[7]  == player) && ( board[11] == player) && ( board[15] == player))||//or # Right Column
-           ((board[0] == player) && ( board[5] == player) && ( board[10] == player) && ( board[15] == player))||//or # Diagonal
-           ((board[3] == player) && ( board[6] == player) && ( board[9] == player) && ( board[12] == player)));   //# Diagonal  
+    if ((board[0] == player) && (board[1] == player) && ( board[2] == player) && ( board[3] == player)) //Top Row
+      return 1;
+    if ((board[4] == player) && ( board[5] == player) && ( board[6] == player) && ( board[7] == player)) //Middle Top Row
+      return 2;
+    if ((board[8] == player) && ( board[9] == player) && ( board[10] == player) && ( board[11] == player)) //Middle Bottom Row
+      return 3;
+    if ((board[12] == player) && ( board[13]  == player) && ( board[14] == player) && ( board[15] == player)) //Bottom Row
+      return 4;
+    if ((board[0] == player) && ( board[4] == player) && ( board[8] == player) && ( board[12] == player)) //Left Column
+      return 5;
+    if ((board[1] == player) && ( board[5] == player) && ( board[9]  == player) && ( board[13] == player)) //Center left Column
+      return 6;
+    if ((board[2] == player) && ( board[6] == player) && ( board[10]  == player) && ( board[14] == player)) //Center right Column
+      return 7;
+    if ((board[3] == player) && ( board[7]  == player) && ( board[11] == player) && ( board[15] == player)) //Right Column
+      return 8;
+    if ((board[0] == player) && ( board[5] == player) && ( board[10] == player) && ( board[15] == player)) //Diagonal
+      return 9;
+    if ((board[3] == player) && ( board[6] == player) && ( board[9] == player) && ( board[12] == player))   //Diagonal
+      return 10;
+    return 0;
 }
 
 bool isBoardFull4(unsigned char *board) {

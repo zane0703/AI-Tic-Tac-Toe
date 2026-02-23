@@ -1,5 +1,4 @@
 #include <limits.h>
-#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -15,7 +14,7 @@ int smartChoice(unsigned char * board, unsigned char player, bool* isAbort){
     int bestMove = 0, i;              // # initialize bestMove
     unsigned char dupBoard[9];
     signed char score, bestScore = SCHAR_MIN;
-    srand ( time(NULL) );
+    srand(time(NULL));
     pos = (int)(rand() % 9);
     memcpy(dupBoard, board, sizeof(unsigned char) * 9);
     for (i = 0; i< 9; ++i){
@@ -46,7 +45,7 @@ int smartChoice(unsigned char * board, unsigned char player, bool* isAbort){
     return bestMove;
 }
 
-signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing, bool* isAbort){
+signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol, unsigned char depth, bool isMaximizing, bool* isAbort){
    /*  ''' Minimax algorithm for the recursion
     ''' */
     //# Terminal conditions for recursion
@@ -88,18 +87,27 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
     //# Remove the following exception when you complete this function
 }
 
-bool isWinner(unsigned char* board, unsigned char player){
+unsigned char isWinner(unsigned char* board, unsigned char player){
     /* ''' Checks if Player has Won the game
     '''
     # Check for 3 valid marks denoting a Win */
-    return (((board[0] == player) && (board[1] == player) && (board[2] == player)) ||// or # Top Row
-            ((board[3] == player) && (board[4] == player) && (board[5] == player)) ||// or # Middle Row
-            ((board[6] == player) && (board[7] == player) && (board[8] == player)) ||// or # Bottom Row
-            ((board[0] == player) && (board[3] == player) && (board[6] == player)) ||// or # Left Column
-            ((board[1] == player) && (board[4] == player) && (board[7] == player)) ||//or # Center Column
-            ((board[2] == player) && (board[5] == player) && (board[8] == player)) ||//or # Right Column
-            ((board[0] == player) && (board[4] == player) && (board[8] == player)) ||// or # Diagonal
-            ((board[6] == player) && (board[4] == player) && (board[2] == player))); //  # Diagonal
+    if ((board[0] == player) && (board[1] == player) && (board[2] == player)) //Top Row
+      return 1;
+    if ((board[3] == player) && (board[4] == player) && (board[5] == player)) //Middle Row
+      return 2;
+    if ((board[6] == player) && (board[7] == player) && (board[8] == player))  //Bottom Row
+      return 3;
+    if ((board[0] == player) && (board[3] == player) && (board[6] == player)) //Left Column
+      return 4;
+    if ((board[1] == player) && (board[4] == player) && (board[7] == player)) //Center Column
+      return 5;
+    if  ((board[2] == player) && (board[5] == player) && (board[8] == player)) //Right Column
+      return 6;
+    if ((board[0] == player) && (board[4] == player) && (board[8] == player)) //Diagonal
+      return 7;
+    if ((board[6] == player) && (board[4] == player) && (board[2] == player)) //Diagonal
+      return 8;
+    return 0;
 }
 
 bool isBoardFull(unsigned char *board) {

@@ -29,11 +29,13 @@ void MainWindow::on_changeButton_Clicked() {
     if (is4x4) {
         is4x4 = false;
         ui->stackedWidget->setCurrentWidget(m_3x3Form);
-        m_4x4Form->on_resetButton_Clicked();
+        m_4x4Form->abort();
+        m_3x3Form->on_resetButton_Clicked();
         ui->changeButton->setText("4x4");
     } else {
         is4x4 = true;
         ui->stackedWidget->setCurrentWidget(m_4x4Form);
+        m_3x3Form->abort();
         m_4x4Form->on_resetButton_Clicked();
         ui->changeButton->setText("3x3");
 

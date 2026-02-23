@@ -8,6 +8,9 @@ TicTacToe3x3Form::TicTacToe3x3Form(QWidget *parent, QLabel *gameStatus)
     , ui(new Ui::TicTacToe3x3Form)
 {
     ui->setupUi(this);
+    worker = nullptr;
+    thread = nullptr;
+    defaultBtnColor = ui->buttonBox0->palette().color(QPalette::Button);
     this->gameStatus = gameStatus;
     this->buttomBox[0] = ui->buttonBox0;
     this->buttomBox[1] = ui->buttonBox1;
@@ -18,6 +21,7 @@ TicTacToe3x3Form::TicTacToe3x3Form(QWidget *parent, QLabel *gameStatus)
     this->buttomBox[6] = ui->buttonBox6;
     this->buttomBox[7] = ui->buttonBox7;
     this->buttomBox[8] = ui->buttonBox8;
+
     connect(ui->buttonBox0, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox0_Clicked);
     connect(ui->buttonBox1, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox1_Clicked);
     connect(ui->buttonBox2, &QPushButton::clicked, this, &TicTacToe3x3Form::on_buttonBox2_Clicked);
@@ -66,15 +70,17 @@ void TicTacToe3x3Form::on_buttonBox8_Clicked() {
     this->playerMove(8);
 }
 void TicTacToe3x3Form::playerMove(int playerChoice){
-    int computeChoice;
+    unsigned char winline;
     if(this->board[playerChoice] != ' ' || !this->isPlayerMove) {
         return;
     }
     this->isPlayerMove = false;
     this->board[playerChoice] = 'O';
     this->buttomBox[playerChoice]->setText("O");
-    if (isWinner(board, 'O')) {
+    winline = isWinner(board, 'O');
+    if (winline) {
         gameStatus->setText("You Win!");
+        setWinLine(Qt::green, winline);
         return;
     }
     if (isBoardFull(board)) {
@@ -86,6 +92,13 @@ void TicTacToe3x3Form::playerMove(int playerChoice){
 
 void TicTacToe3x3Form::computerMove(){
     int computeChoice;
+    if(ui->dumpModeCheck->isChecked()) {
+        do {
+            computeChoice = rand() % 9;
+        }while(board[computeChoice] != ' ');
+        on_computerMove_Result(computeChoice);
+        return;
+    }
     gameStatus->setText("Computer Move");
     worker = new Worker3x3(board);
     thread = new QThread;
@@ -103,6 +116,7 @@ void TicTacToe3x3Form::on_resetButton_Clicked() {
     int i;
     for (i = 0; i< 9;++i) {
         buttomBox[i]->setText(" ");
+        setBtnColour(defaultBtnColor, i);
         board[i] = ' ';
     }
     this->isPlayerMove = rand()&1;
@@ -117,10 +131,13 @@ void TicTacToe3x3Form::on_resetButton_Clicked() {
 
 }
 void TicTacToe3x3Form::on_computerMove_Result(int computeChoice){
+    unsigned char winline;
     this->board[computeChoice] = 'X';
     this->buttomBox[computeChoice]->setText("X");
-    if (isWinner(board, 'X')) {
+    winline = isWinner(board, 'X');
+    if (winline) {
         gameStatus->setText("You lost!");
+        setWinLine(Qt::red, winline);
         return;
     }
     if (isBoardFull(board)) {
@@ -130,6 +147,63 @@ void TicTacToe3x3Form::on_computerMove_Result(int computeChoice){
     this->isPlayerMove = true;
     gameStatus->setText("Player Move");
 }
+void TicTacToe3x3Form::setWinLine(QColor colour, unsigned char winLine) {
+
+    switch (winLine) {
+    case 1:
+        setBtnColour(colour, 0);
+        setBtnColour(colour, 1);
+        setBtnColour(colour, 2);
+        break;
+    case 2:
+        setBtnColour(colour, 3);
+        setBtnColour(colour, 4);
+        setBtnColour(colour, 5);
+        break;
+    case 3:
+        setBtnColour(colour, 6);
+        setBtnColour(colour, 7);
+        setBtnColour(colour, 8);
+        break;
+    case 4:
+        setBtnColour(colour, 0);
+        setBtnColour(colour, 3);
+        setBtnColour(colour, 6);
+        break;
+    case 5:
+        setBtnColour(colour, 1);
+        setBtnColour(colour, 4);
+        setBtnColour(colour, 7);
+        break;
+    case 6:
+        setBtnColour(colour, 2);
+        setBtnColour(colour, 5);
+        setBtnColour(colour, 8);
+        break;
+    case 7:
+        setBtnColour(colour, 0);
+        setBtnColour(colour, 4);
+        setBtnColour(colour, 8);
+        break;
+    case 8:
+        setBtnColour(colour, 2);
+        setBtnColour(colour, 4);
+        setBtnColour(colour, 6);
+        break;
+    }
+}
+void TicTacToe3x3Form::setBtnColour(QColor colour, unsigned int btnIndex) {
+    QPalette palette = buttomBox[btnIndex]->palette();
+    palette.setColor(QPalette::Button, colour);
+    buttomBox[btnIndex]->setPalette(palette);
+}
+
+void TicTacToe3x3Form::abort() {
+    if(!worker.isNull()) {
+        worker->abort();
+    }
+}
+
 Worker3x3::Worker3x3(unsigned char * board) {
     this->board = board;
     isAbort = false;
@@ -145,6 +219,9 @@ void Worker3x3::doWork() {
     emit finished();
 }
 
+
 void Worker3x3::abort() {
     isAbort = true;
 }
+
+

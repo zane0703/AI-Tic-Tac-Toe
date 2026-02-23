@@ -13,6 +13,7 @@ TicTacToe4x4Form::TicTacToe4x4Form(QWidget *parent, QLabel *gameStatus)
     ui->setupUi(this);
     worker = nullptr;
     thread = nullptr;
+    defaultBtnColor = ui->buttonBox0->palette().color(QPalette::Button);
     this->gameStatus = gameStatus;
     this->buttomBox[0] = ui->buttonBox0;
     this->buttomBox[1] = ui->buttonBox1;
@@ -109,15 +110,17 @@ void TicTacToe4x4Form::on_buttonBox15_Clicked() {
 }
 
 void TicTacToe4x4Form::playerMove(int playerChoice){
+    unsigned char winLine;
     if(this->board[playerChoice] != ' ' || !this->isPlayerMove) {
         return;
     }
-
     this->isPlayerMove = false;
     this->board[playerChoice] = 'O';
     this->buttomBox[playerChoice]->setText("O");
-    if (isWinner4(board, 'O')) {
+    winLine =isWinner4(board, 'O');
+    if (winLine) {
         gameStatus->setText("You Win!");
+        setWinLine(Qt::green, winLine);
         return;
     }
     if (isBoardFull4(board)) {
@@ -132,7 +135,14 @@ void TicTacToe4x4Form::computerMove(){
     int deapLimit;
 
     gameStatus->setText("Computer Move");
-    deapLimit = ui->depthLimitcomboBox->currentIndex() + 5;
+    deapLimit = ui->depthLimitcomboBox->currentIndex() + 4;
+    if (deapLimit == 4) {
+        do {
+            computeChoice = rand() % 16;
+        }while(board[computeChoice] != ' ');
+        on_computerMove_Result(computeChoice);
+        return;
+    }
     worker = new Worker(board, deapLimit);
     thread = new QThread;
     worker->moveToThread(thread);
@@ -145,10 +155,14 @@ void TicTacToe4x4Form::computerMove(){
     thread->start();
 }
 void TicTacToe4x4Form::on_computerMove_Result(int computeChoice) {
+    unsigned char winLine;
     this->board[computeChoice] = 'X';
     this->buttomBox[computeChoice]->setText("X");
-    if (isWinner4(board, 'X')) {
+    winLine = isWinner4(board, 'X');
+    qDebug()<< winLine;
+    if (winLine) {
         gameStatus->setText("You lost!");
+        setWinLine(Qt::red, winLine);
         return;
     }
     if (isBoardFull4(board)) {
@@ -163,6 +177,7 @@ void TicTacToe4x4Form::on_resetButton_Clicked() {
     int i;
     for (i = 0; i< 16;++i) {
         buttomBox[i]->setText(" ");
+        setBtnColour(defaultBtnColor, i);
         board[i] = ' ';
     }
     if (!worker.isNull()) {
@@ -175,12 +190,89 @@ void TicTacToe4x4Form::on_resetButton_Clicked() {
         computerMove();
     }
 }
+
+void TicTacToe4x4Form::abort() {
+    if(!worker.isNull()) {
+        worker->abort();
+    }
+}
+
 Worker::Worker(unsigned char * board, unsigned char deapLimit) {
     this->board = board;
     this->depthLimit = deapLimit;
     this->isAbort = false;
 }
 
+void TicTacToe4x4Form::setWinLine(QColor colour, unsigned char winLine) {
+    qDebug()<< winLine;
+    switch (winLine) {
+    case 1:
+        setBtnColour(colour, 0);
+        setBtnColour(colour, 1);
+        setBtnColour(colour, 2);
+        setBtnColour(colour, 3);
+        break;
+    case 2:
+        setBtnColour(colour, 4);
+        setBtnColour(colour, 5);
+        setBtnColour(colour, 6);
+        setBtnColour(colour, 7);
+        break;
+    case 3:
+        setBtnColour(colour, 8);
+        setBtnColour(colour, 9);
+        setBtnColour(colour, 10);
+        setBtnColour(colour, 11);
+        break;
+    case 4:
+        setBtnColour(colour, 12);
+        setBtnColour(colour, 13);
+        setBtnColour(colour, 14);
+        setBtnColour(colour, 15);
+        break;
+    case 5:
+        setBtnColour(colour, 0);
+        setBtnColour(colour, 4);
+        setBtnColour(colour, 8);
+        setBtnColour(colour, 12);
+        break;
+    case 6:
+        setBtnColour(colour, 1);
+        setBtnColour(colour, 5);
+        setBtnColour(colour, 9);
+        setBtnColour(colour, 13);
+        break;
+    case 7:
+        setBtnColour(colour, 2);
+        setBtnColour(colour, 6);
+        setBtnColour(colour, 10);
+        setBtnColour(colour, 14);
+        break;
+    case 8:
+        setBtnColour(colour, 3);
+        setBtnColour(colour, 6);
+        setBtnColour(colour, 11);
+        setBtnColour(colour, 15);
+        break;
+    case 9:
+        setBtnColour(colour, 0);
+        setBtnColour(colour, 5);
+        setBtnColour(colour, 10);
+        setBtnColour(colour, 15);
+        break;
+    case 10:
+        setBtnColour(colour, 3);
+        setBtnColour(colour, 6);
+        setBtnColour(colour, 9);
+        setBtnColour(colour, 12);
+        break;
+    }
+}
+void TicTacToe4x4Form::setBtnColour(QColor colour, unsigned int btnIndex) {
+    QPalette palette = buttomBox[btnIndex]->palette();
+    palette.setColor(QPalette::Button, colour);
+    buttomBox[btnIndex]->setPalette(palette);
+}
 
 void Worker::doWork() {
     unsigned char player ='X';
@@ -188,7 +280,6 @@ void Worker::doWork() {
     int pos, i, j = 0 , bestMove = 0, storePos[16];
     srand ( time(NULL) );
     pos = (int)(rand() % 16);
-    qDebug()<< pos;
     for (i = 0; i< 16; ++i){
         pos = (pos + 1) % 16;
         if (board[pos] != ' ') continue;

@@ -41,6 +41,7 @@ public:
     explicit TicTacToe4x4Form(QWidget *parent = nullptr, QLabel *gameStatus = nullptr);
     ~TicTacToe4x4Form();
     void on_resetButton_Clicked();
+    void abort();
 private slots:
     void on_buttonBox0_Clicked();
     void on_buttonBox1_Clicked();
@@ -62,15 +63,18 @@ private slots:
 
 
 private:
-    Ui::TicTacToe4x4Form *ui;
-    QPushButton* buttomBox[16];
     bool isPlayerMove;
     unsigned char board[16];
     void playerMove(int index);
     void computerMove();
+    void setWinLine(QColor colour, unsigned char winLine);
+    void setBtnColour(QColor colour, unsigned int btnIndex);
+    Ui::TicTacToe4x4Form *ui;
+    QPushButton* buttomBox[16];
     QLabel *gameStatus;
     QPointer<Worker> worker;
     QPointer<QThread> thread;
+    QColor defaultBtnColor;
 };
 
 
