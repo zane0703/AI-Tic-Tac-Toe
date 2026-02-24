@@ -9,11 +9,15 @@
 #endif
 
 signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char minSymbol,  char depth, bool isMaximizing);
-bool EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
+unsigned char  EMSCRIPTEN_KEEPALIVE isWinner(unsigned char* board, unsigned char player);
 bool EMSCRIPTEN_KEEPALIVE isBoardFull(unsigned char *board);
 extern double random2(void);
 
-int EMSCRIPTEN_KEEPALIVE  smartChoice(unsigned char * board, unsigned char player){
+/* void* EMSCRIPTEN_KEEPALIVE myMalloc() {
+    return malloc(sizeof(unsigned char)* 9);
+} */
+
+int EMSCRIPTEN_KEEPALIVE smartChoice(unsigned char * board, unsigned char player){
    
   /*   ''' Returns a smart choice using an AI algorithm
     ''' */
@@ -91,18 +95,27 @@ signed char minimax(unsigned char* board, unsigned char maxSymbol, unsigned char
     //# Remove the following exception when you complete this function
 }
 
-bool isWinner(unsigned char* board, unsigned char player){
+unsigned char isWinner(unsigned char* board, unsigned char player){
     /* ''' Checks if Player has Won the game
     '''
     # Check for 3 valid marks denoting a Win */
-    return (((board[0] == player) && (board[1] == player) && (board[2] == player)) ||// or # Top Row
-           ((board[3] == player) && (board[4] == player) && (board[5] == player)) ||// or # Middle Row
-           ((board[6] == player) && (board[7] == player) && (board[8] == player)) ||// or # Bottom Row
-           ((board[0] == player) && (board[3] == player) && (board[6] == player)) ||// or # Left Column
-           ((board[1] == player) && (board[4] == player) && (board[7] == player)) ||//or # Center Column
-           ((board[2] == player) && (board[5] == player) && (board[8] == player)) ||//or # Right Column
-           ((board[0] == player) && (board[4] == player) && (board[8] == player)) ||// or # Diagonal
-           ((board[6] == player) && (board[4] == player) && (board[2] == player))); //  # Diagonal
+    if ((board[0] == player) && (board[1] == player) && (board[2] == player)) //Top Row
+      return 1;
+    if ((board[3] == player) && (board[4] == player) && (board[5] == player)) //Middle Row
+      return 2;
+    if ((board[6] == player) && (board[7] == player) && (board[8] == player))  //Bottom Row
+      return 3;
+    if ((board[0] == player) && (board[3] == player) && (board[6] == player)) //Left Column
+      return 4;
+    if ((board[1] == player) && (board[4] == player) && (board[7] == player)) //Center Column
+      return 5;
+    if  ((board[2] == player) && (board[5] == player) && (board[8] == player)) //Right Column
+      return 6;
+    if ((board[0] == player) && (board[4] == player) && (board[8] == player)) //Diagonal
+      return 7;
+    if ((board[6] == player) && (board[4] == player) && (board[2] == player)) //Diagonal
+      return 8;
+    return 0;
 }
 
 bool isBoardFull(unsigned char *board) {

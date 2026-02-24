@@ -1,19 +1,32 @@
 let isPlayer = false;
 let is4x4 = false;
-let importOptions = { random2:Math.random }
+let currentWinLine = 0;
+let importOptions = { args_sizes_get:console.log, args_get:console.log, __main_argc_argv:console.log, proc_exit:console.log,random2:Math.random}
 importOptions = { env: importOptions, wasi_snapshot_preview1:importOptions }
 /**@type {HTMLButtonElement[]} */
 const btn = [];
+/**@type {HTMLDivElement[]} */
+const line= [];
 for (let i = 0; i < 9; ++i) {
     btn.push(document.getElementById(`btn${i}`));
 }
 Object.freeze(btn)
+line.push(...document.querySelectorAll(`#s3x3 .line`))
+line.push(document.querySelector(`#s3x3 .diagonal-right`))
+line.push(document.querySelector(`#s3x3 .diagonal-left`))
+Object.freeze(line)
 /**@type {HTMLButtonElement[]} */
 const btn4x4 = [];
+/**@type {HTMLDivElement[]} */
+const line4x4 = [];
 for (let i = 0; i < 16; ++i) {
     btn4x4.push(document.getElementById(`btn-4x4-${i}`));
 }
 Object.freeze(btn4x4)
+line4x4.push(...document.querySelectorAll(`#s4x4 .line`))
+line4x4.push(document.querySelector(`#s4x4 .diagonal-right`))
+line4x4.push(document.querySelector(`#s4x4 .diagonal-left`))
+Object.freeze(line4x4)
 
 let depthLimit = 6;
 
@@ -48,14 +61,20 @@ function bottomButtonDisabled(disabled) {
     changeMode.disabled = disabled;
 }
 
-function computerMove2(wasmIn, array, disableAll, btn) {
-    let comChoice = wasmIn.smartChoice(array, 88, depthLimit);
+function computerMove(wasmIn, array, disableAll, btn) {
+    console.log(wasmIn, array)
+   let comChoice = wasmIn.smartChoice(array, 88, depthLimit);
     array[comChoice] = 88; //88 = 'X'
     btn[comChoice].textContent = "X";
     btn[comChoice].disabled = true;
     isPlayer = true;
-
-    if (wasmIn.isWinner(array, 88)) {
+    currentWinLine = wasmIn.isWinner(array, 88)
+    if (currentWinLine) {
+        if(is4x4){
+            line4x4[currentWinLine-1].style.visibility="visible"
+        }else {
+            line[currentWinLine-1].style.visibility="visible"
+        }
         statusText.textContent = "You lost!";
         bottomButtonDisabled(false);
         return;
@@ -75,7 +94,13 @@ function playerMove(wasmIn, array, disableAll, computerMove, playerChoice, even)
     even.target.textContent = "O";
     even.target.disabled = true;
     disableAll(true);
-    if (wasmIn.isWinner(array, 79)) {
+    currentWinLine = wasmIn.isWinner(array, 79)
+    if (currentWinLine) {
+        if(is4x4){
+            line4x4[currentWinLine-1].style.visibility="visible"
+        }else {
+            line[currentWinLine-1].style.visibility="visible"
+        }
         statusText.textContent = "You win!";
         bottomButtonDisabled(false);
         return;
@@ -96,6 +121,14 @@ changeMode.addEventListener("click", () => {
     table4x4.style.display = is4x4 ? "none" : "block";
     changeMode.textContent = is4x4 ? "4 x 4" : "3 x 3";
     changeMode.title = "Switch to " + changeMode.textContent;
+    if (currentWinLine) {
+        if(is4x4){
+            line4x4[currentWinLine-1].style.visibility="hidden"
+        }else {
+            line[currentWinLine-1].style.visibility="hidden"
+        }
+        currentWinLine = 0;
+    }
     is4x4 = !is4x4;
     clear.click();
 });
@@ -103,7 +136,7 @@ changeMode.addEventListener("click", () => {
 WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"), importOptions )
     .then(wasmIn => {
         let array = new Uint8Array(wasmIn.instance.exports.memory.buffer, 0, 9);
-
+        console.log(wasmIn.instance.exports)
         const disableAll = (turn) => {
             isPlayer = !turn;
 
@@ -112,9 +145,9 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"), importOptions )
             }
             bottomButtonDisabled(turn);
         }
-
-        const computerMove = computerMove2.bind(null, wasmIn.instance.exports, array, disableAll, btn);
-        const playerMove2 = playerMove.bind(null, wasmIn.instance.exports, array, disableAll, computerMove);
+        
+        const computerMove2 = computerMove.bind(null, wasmIn.instance.exports, array, disableAll, btn);
+        const playerMove2 = playerMove.bind(null, wasmIn.instance.exports, array, disableAll, computerMove2);
         const startGame = () => {
             if (is4x4) return;
             array.fill(32); // 32 = ' '
@@ -123,8 +156,12 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"), importOptions )
                 btn[i].textContent = "\xA0";
                 btn[i].disabled = !isPlayer;
             }
+            if (currentWinLine) {
+                line[currentWinLine-1].style.visibility="hidden"
+                currentWinLine = 0;
+            }
             statusText.textContent = isPlayer ? "Player Move" : "Computes Move ...";
-            if (!isPlayer) setTimeout(computerMove, 0);
+            if (!isPlayer) setTimeout(computerMove2, 0);
         }
 
         for (let i = 0; i < 9; ++i) {
@@ -136,7 +173,7 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe.wasm"), importOptions )
     });
 
 /* 4 x 4 */
-WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"), importOptions)
+ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"), importOptions)
     .then(wasmIn => {
         let array = new Uint8Array(wasmIn.instance.exports.memory.buffer, 0, 16);
 
@@ -149,8 +186,8 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"), importOptions)
 
         }
 
-        const computerMove = computerMove2.bind(null, wasmIn.instance.exports, array, disableAll, btn4x4);
-        const playerMove2 = playerMove.bind(null, wasmIn.instance.exports, array, disableAll, computerMove);
+        const computerMove2 = computerMove.bind(null, wasmIn.instance.exports, array, disableAll, btn4x4);
+        const playerMove2 = playerMove.bind(null, wasmIn.instance.exports, array, disableAll, computerMove2);
         const startGame = () => {
             if (!is4x4) return;
             array.fill(32); // 32 = ' '
@@ -159,8 +196,12 @@ WebAssembly.instantiateStreaming(fetch("Tic-Tac-Toe-4x4.wasm"), importOptions)
                 btn4x4[i].textContent = "\xA0";
                 btn4x4[i].disabled = !isPlayer;
             }
+            if (currentWinLine) {
+                line4x4[currentWinLine-1].style.visibility="hidden"
+                currentWinLine = 0;
+            }
             statusText.textContent = isPlayer ? "Player Move" : "Computes Move ...";
-            if (!isPlayer) setTimeout(computerMove, 0);
+            if (!isPlayer) setTimeout(computerMove2, 0);
         }
         for (let i = 0; i < 16; ++i) {
             btn4x4[i].addEventListener("click", playerMove2.bind(null, i));
