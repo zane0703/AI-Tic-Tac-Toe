@@ -250,7 +250,7 @@ void TicTacToe4x4Form::setWinLine(QColor colour, unsigned char winLine) {
         break;
     case 8:
         setBtnColour(colour, 3);
-        setBtnColour(colour, 6);
+        setBtnColour(colour, 7);
         setBtnColour(colour, 11);
         setBtnColour(colour, 15);
         break;
