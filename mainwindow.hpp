@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include "tictactoe3x3form.hpp"
 #include "tictactoe4x4form.hpp"
+#include <QstyleHints>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,6 +25,7 @@ public:
 private slots:
     void on_resetButton_Clicked();
     void on_changeButton_Clicked();
+    void on_colorScheme_Changed(Qt::ColorScheme);
 
 
 private:

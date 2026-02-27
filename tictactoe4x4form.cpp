@@ -1,10 +1,7 @@
 #include "tictactoe4x4form.hpp"
 #include "ui_tictactoe4x4form.h"
 #include "Tic-Tac-Toe-4x4.h"
-#include <stdlib.h>
-#include <QString>
-#include <time.h>
-#include <QDebug>
+
 
 TicTacToe4x4Form::TicTacToe4x4Form(QWidget *parent, QLabel *gameStatus)
     : QWidget(parent)
@@ -13,8 +10,7 @@ TicTacToe4x4Form::TicTacToe4x4Form(QWidget *parent, QLabel *gameStatus)
     ui->setupUi(this);
     worker = nullptr;
     thread = nullptr;
-    defaultBtnColor = ui->buttonBox0->palette().color(QPalette::Button);
-    qDebug()<<defaultBtnColor;
+    defaultBtnPalette = ui->buttonBox0->palette();
     this->gameStatus = gameStatus;
     this->buttomBox[0] = ui->buttonBox0;
     this->buttomBox[1] = ui->buttonBox1;
@@ -178,7 +174,8 @@ void TicTacToe4x4Form::on_resetButton_Clicked() {
     int i;
     for (i = 0; i< 16;++i) {
         buttomBox[i]->setText(" ");
-        setBtnColour(defaultBtnColor, i);
+        //setBtnColour(defaultBtnColor, i);
+        buttomBox[i]->setPalette(defaultBtnPalette);
         board[i] = ' ';
     }
     if (!worker.isNull()) {

@@ -9,6 +9,10 @@
 #include <qpointer>
 #include <QtConcurrent/QtConcurrent>
 #include <QFuture>
+#include <stdlib.h>
+#include <QString>
+#include <time.h>
+#include <QDebug>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TicTacToe4x4Form;
@@ -74,7 +78,7 @@ private:
     QLabel *gameStatus;
     QPointer<Worker> worker;
     QPointer<QThread> thread;
-    QColor defaultBtnColor;
+    QPalette defaultBtnPalette;
 };
 
 

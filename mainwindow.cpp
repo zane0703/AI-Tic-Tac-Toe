@@ -4,9 +4,25 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    QPalette palette;
+    QStyleHints *styleHints;
+
     setWindowTitle("Tic-tac-toe");
     is4x4 = false;
     ui->setupUi(this);
+    styleHints = QGuiApplication::styleHints();
+    switch (styleHints->colorScheme()){
+        case Qt::ColorScheme::Light:
+            palette = this->palette();
+            palette.setColor(QPalette::Window,Qt::lightGray);
+            this->setPalette(palette);
+            break;
+        default:
+            palette = this->palette();
+            palette.setColor(QPalette::Window,Qt::black);
+            this->setPalette(palette);
+
+    }
     m_3x3Form = new TicTacToe3x3Form(this, ui->gameStatus);
     m_4x4Form = new TicTacToe4x4Form(this, ui->gameStatus);
     ui->stackedWidget->addWidget(m_3x3Form);
@@ -15,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_3x3Form->on_resetButton_Clicked();
     connect(ui->resetButton, &QPushButton::clicked, this, &MainWindow::on_resetButton_Clicked);
     connect(ui->changeButton, &QPushButton::clicked, this, &MainWindow::on_changeButton_Clicked);
+    connect(styleHints,&QStyleHints::colorSchemeChanged, this, &MainWindow::on_colorScheme_Changed);
 }
 
 MainWindow::~MainWindow()
@@ -51,3 +68,19 @@ void MainWindow::on_resetButton_Clicked() {
     }
 }
 
+
+void MainWindow::on_colorScheme_Changed(Qt::ColorScheme colorScheme) {
+    QPalette palette;
+    switch (colorScheme){
+        case Qt::ColorScheme::Light:
+            palette = this->palette();
+            palette.setColor(QPalette::Window,Qt::lightGray);
+            this->setPalette(palette);
+            break;
+        default:
+            palette = this->palette();
+            palette.setColor(QPalette::Window,Qt::black);
+            this->setPalette(palette);
+
+    }
+}

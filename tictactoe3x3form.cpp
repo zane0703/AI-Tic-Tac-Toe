@@ -1,16 +1,20 @@
 #include "tictactoe3x3form.hpp"
 #include "ui_tictactoe3x3form.h"
 #include "Tic-Tac-Toe.h"
-#include <QDebug>
+
 
 TicTacToe3x3Form::TicTacToe3x3Form(QWidget *parent, QLabel *gameStatus)
     : QWidget(parent)
     , ui(new Ui::TicTacToe3x3Form)
 {
+    QPalette paette;
+
     ui->setupUi(this);
+
+
     worker = nullptr;
     thread = nullptr;
-    defaultBtnColor = ui->buttonBox0->palette().color(QPalette::Button);
+    defaultBtnPalette = ui->buttonBox0->palette();
     this->gameStatus = gameStatus;
     this->buttomBox[0] = ui->buttonBox0;
     this->buttomBox[1] = ui->buttonBox1;
@@ -116,7 +120,7 @@ void TicTacToe3x3Form::on_resetButton_Clicked() {
     int i;
     for (i = 0; i< 9;++i) {
         buttomBox[i]->setText(" ");
-        setBtnColour(defaultBtnColor, i);
+        buttomBox[i]->setPalette(defaultBtnPalette);
         board[i] = ' ';
     }
     this->isPlayerMove = rand()&1;

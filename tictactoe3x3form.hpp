@@ -7,6 +7,9 @@
 #include <QObject>
 #include <qthread>
 #include <qpointer.h>
+#include <QstyleHints>
+#include <QDebug>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TicTacToe3x3Form;
@@ -62,7 +65,7 @@ private:
     QLabel *gameStatus;
     QPointer<Worker3x3> worker;
     QPointer<QThread> thread;
-    QColor defaultBtnColor;
+    QPalette defaultBtnPalette;
 
 };
 
