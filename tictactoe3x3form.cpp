@@ -1,4 +1,4 @@
-#include "tictactoe3x3form.h"
+#include "tictactoe3x3form.hpp"
 #include "ui_tictactoe3x3form.h"
 #include "Tic-Tac-Toe.h"
 #include <QDebug>

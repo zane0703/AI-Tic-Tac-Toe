@@ -16,12 +16,12 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
-        mainwindow.h
+        mainwindow.hpp
         mainwindow.ui
         Tic-Tac-Toe.c
         Tic-Tac-Toe.h
-        tictactoe3x3form.h tictactoe3x3form.cpp tictactoe3x3form.ui
-        tictactoe4x4form.h tictactoe4x4form.cpp tictactoe4x4form.ui
+        tictactoe3x3form.hpp tictactoe3x3form.cpp tictactoe3x3form.ui
+        tictactoe4x4form.hpp tictactoe4x4form.cpp tictactoe4x4form.ui
         Tic-Tac-Toe-4x4.h
         Tic-Tac-Toe-4x4.c
 )
@@ -35,8 +35,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         resources.qrc
          ${APP_ICON_RESOURCE}
-        tictactoe3x3form.h tictactoe3x3form.cpp tictactoe3x3form.ui
-        tictactoe4x4form.h tictactoe4x4form.cpp tictactoe4x4form.ui
+         tictactoe3x3form.hpp tictactoe3x3form.cpp tictactoe3x3form.ui
+         tictactoe4x4form.hpp tictactoe4x4form.cpp tictactoe4x4form.ui
         Tic-Tac-Toe-4x4.h
         Tic-Tac-Toe-4x4.c
 

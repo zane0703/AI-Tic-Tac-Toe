@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include "tictactoe3x3form.h"
-#include "tictactoe4x4form.h"
+#include "tictactoe3x3form.hpp"
+#include "tictactoe4x4form.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

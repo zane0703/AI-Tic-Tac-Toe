@@ -1,4 +1,4 @@
-#include "tictactoe4x4form.h"
+#include "tictactoe4x4form.hpp"
 #include "ui_tictactoe4x4form.h"
 #include "Tic-Tac-Toe-4x4.h"
 #include <stdlib.h>
@@ -14,6 +14,7 @@ TicTacToe4x4Form::TicTacToe4x4Form(QWidget *parent, QLabel *gameStatus)
     worker = nullptr;
     thread = nullptr;
     defaultBtnColor = ui->buttonBox0->palette().color(QPalette::Button);
+    qDebug()<<defaultBtnColor;
     this->gameStatus = gameStatus;
     this->buttomBox[0] = ui->buttonBox0;
     this->buttomBox[1] = ui->buttonBox1;
@@ -204,7 +205,6 @@ Worker::Worker(unsigned char * board, unsigned char deapLimit) {
 }
 
 void TicTacToe4x4Form::setWinLine(QColor colour, unsigned char winLine) {
-    qDebug()<< winLine;
     switch (winLine) {
     case 1:
         setBtnColour(colour, 0);
