@@ -3,9 +3,9 @@ AI-Tic-Tac-Toe is an unbeatable game powered by a C-based Minimax engine. This p
 ## 📦 Downloads (Pre-built Files)
 You can download the latest pre-built versions of the application from the Releases section of the repository:
 👉 [Download Pre-built Assets](https://github.com/zane0703/AI-Tic-Tac-Toe/releases)
-- **Windows:** Windows-Tic-Tac-Toe-x86-64.exe (Tested on Windows 11).
-- **Android:** android-Tic-Tac-Toe-arm64.apk (Tested on Android 16).
-- **Web:** Play directly in your browser via [GitHub Pages](zane0703.github.io/AI-Tic-Tac-Toe/).
+- **Windows:** Tic-Tac-Toe-Windows-x86-64.exe (Tested on Windows 11).
+- **Android:** Tic-Tac-Toe-android-arm64.apk (Tested on Android 16).
+- **Web:** Play directly in your browser via [GitHub Pages](https://zane0703.github.io/AI-Tic-Tac-Toe/).
 ## ✨ Key Features
 - Unbeatable Minimax AI: Ensures the AI plays optimally in all modes.
 - Multi-threading: Recent updates added multi-threading support to further improve engine performance.
