@@ -1,4 +1,4 @@
-# AI-Tic-Tac-Toe
+# AI Tic Tac Toe
 AI-Tic-Tac-Toe is an unbeatable game powered by a C-based Minimax engine. This project offers a highly performant AI capable of playing standard 3x3 games and a more challenging 4x4 variant.
 ## 📦 Downloads (Pre-built Files)
 You can download the latest pre-built versions of the application from the Releases section of the repository:
